@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Clase abstracta Servicio y tres servicios especializados (polimorfismo)."""
+import math
 import itertools  # Para los contadores de id
 from abc import ABC, abstractmethod  # Para definir la clase abstracta
 
@@ -9,6 +10,16 @@ from excepciones import (  # Errores propios usados en este módulo
     ParametroFaltanteError,
     ServicioInvalidoError,
 )
+
+
+def _numero_finito(valor):
+    """Acepta números representables como float; excluye booleanos, NaN e infinitos."""
+    if isinstance(valor, bool) or not isinstance(valor, (int, float)):
+        return False
+    try:
+        return math.isfinite(valor)
+    except OverflowError:
+        return False
 
 
 class Servicio(EntidadBase, ABC):  # Clase abstracta Servicio
@@ -21,7 +32,7 @@ class Servicio(EntidadBase, ABC):  # Clase abstracta Servicio
         super().__init__()  # Inicializa id y fecha
         if nombre is None or str(nombre).strip() == "":  # Nombre obligatorio
             raise ParametroFaltanteError("Falta el nombre del servicio")  # Error si falta
-        if isinstance(tarifa_hora, bool) or not isinstance(tarifa_hora, (int, float)) or tarifa_hora <= 0:  # Tarifa válida
+        if not _numero_finito(tarifa_hora) or tarifa_hora <= 0:  # Tarifa válida
             raise ServicioInvalidoError(f"Tarifa por hora inválida: {tarifa_hora!r}")  # Error si no es positiva
         self._nombre = str(nombre).strip()  # Nombre protegido
         self._tarifa_hora = float(tarifa_hora)  # Tarifa protegida
@@ -62,13 +73,13 @@ class Servicio(EntidadBase, ABC):  # Clase abstracta Servicio
         self.validar_parametros(horas, **extra)  # Primero valida (método polimórfico)
         tasa = self.IVA_POR_DEFECTO if impuesto is None else impuesto  # Usa IVA por defecto si no se indica
         dto = 0.0 if descuento is None else descuento  # Sin descuento por defecto
-        if not isinstance(tasa, (int, float)) or not 0 <= tasa <= 1:  # El impuesto debe estar entre 0 y 1
+        if not _numero_finito(tasa) or not 0 <= tasa <= 1:  # El impuesto debe estar entre 0 y 1
             raise CalculoInconsistenteError(f"Impuesto fuera de rango: {tasa!r}")  # Error de cálculo
-        if not isinstance(dto, (int, float)) or not 0 <= dto <= 1:  # El descuento debe estar entre 0 y 1
+        if not _numero_finito(dto) or not 0 <= dto <= 1:  # El descuento debe estar entre 0 y 1
             raise CalculoInconsistenteError(f"Descuento fuera de rango: {dto!r}")  # Error de cálculo
         base = self.calcular_costo_base(horas)  # Costo base según el tipo de servicio
         total = base * (1 - dto) * (1 + tasa)  # Aplica descuento y luego impuesto
-        if total <= 0:  # Un costo no positivo es inconsistente
+        if not _numero_finito(total) or total <= 0:  # Un costo no positivo es inconsistente
             raise CalculoInconsistenteError(f"Costo calculado inconsistente: {total}")  # Error de cálculo
         return round(total, 2)  # Devuelve el total redondeado
 
@@ -101,7 +112,7 @@ class AlquilerEquipo(Servicio):  # Servicio 2: alquiler de equipos
 
     def __init__(self, nombre=None, tarifa_hora=None, seguro=0):  # Constructor con seguro
         super().__init__(nombre, tarifa_hora)  # Valida nombre y tarifa
-        if isinstance(seguro, bool) or not isinstance(seguro, (int, float)) or seguro < 0:  # Seguro no negativo
+        if not _numero_finito(seguro) or seguro < 0:  # Seguro no negativo
             raise ServicioInvalidoError(f"Seguro inválido: {seguro!r}")  # Error si es inválido
         self._seguro = float(seguro)  # Guarda el seguro
 

@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """Gestor central: maneja las listas internas y mantiene el sistema estable ante cualquier error."""
+from inspect import signature
 from cliente import Cliente  # Clase Cliente
 from excepciones import (  # Errores propios
     ClienteInvalidoError,
     ErrorSoftwareFJ,
+    OperacionNoPermitidaError,
     ReservaInvalidaError,
     ServicioInvalidoError,
 )
@@ -90,7 +92,21 @@ class GestorFJ:  # Clase que coordina todo el sistema
     def ejecutar_sobre_reserva(self, id_reserva, accion, **parametros):  # Confirmar, cancelar o procesar
         try:  # Intenta la acción
             reserva = self._buscar(self._reservas, id_reserva, "Reserva")  # Busca la reserva
-            resultado = getattr(reserva, accion)(**parametros)  # Llama al método por nombre
+            acciones = {
+                "confirmar": reserva.confirmar,
+                "cancelar": reserva.cancelar,
+                "procesar": reserva.procesar,
+            }
+            if not isinstance(accion, str) or accion not in acciones:
+                raise OperacionNoPermitidaError(f"Acción no permitida: {accion!r}")
+            metodo = acciones[accion]
+            try:
+                signature(metodo).bind(**parametros)  # Valida antes de cambiar el estado
+            except TypeError as error:
+                raise OperacionNoPermitidaError(
+                    f"Parámetros incorrectos para la acción {accion!r}"
+                ) from error
+            resultado = metodo(**parametros)
         except ErrorSoftwareFJ as error:  # Cualquier error propio
             log.error(f"Acción '{accion}' fallida en reserva {id_reserva}: {error} | causa: {error.__cause__}")  # Registra
             print(f"   [ERROR] {error}" + (f" -> {error.__cause__}" if error.__cause__ else ""))  # Informa
