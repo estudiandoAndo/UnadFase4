@@ -24,9 +24,16 @@ class EntidadBase(ABC):  # Clase abstracta: no se puede instanciar directamente
     def fecha_creacion(self):  # Getter de la fecha
         return self._fecha_creacion  # Devuelve la fecha privada
 
+    @property  # Fecha lista para mostrar en pantalla o en el log
+    def fecha_texto(self):  # Getter de la fecha en formato legible
+        return self._fecha_creacion.strftime("%Y-%m-%d %H:%M:%S")  # Ejemplo: 2026-11-21 15:30:00
+
     @abstractmethod  # Obliga a las subclases a implementar este método
     def describir(self):  # Cada entidad se describe a sí misma (polimorfismo)
         """Devuelve un texto que describe la entidad."""
 
     def __str__(self):  # Al imprimir una entidad se usa su descripción
         return self.describir()  # Delegamos en el método polimórfico
+
+    def __repr__(self):  # Representación técnica, útil para depurar en consola
+        return f"<{type(self).__name__} fecha={self.fecha_texto}>"  # No usa self.id para no gastar un número
