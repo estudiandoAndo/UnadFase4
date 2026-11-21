@@ -1,0 +1,53 @@
+2026-11-21 17:50:53,458 | INFO     | ===== INICIO DE LA SIMULACIÓN SOFTWARE FJ =====
+2026-11-21 17:50:53,458 | INFO     | Cliente registrado: Cliente #1: Ana María Gómez | Doc: *******123 | ana@correo.com | Tel: 3101234567
+2026-11-21 17:50:53,459 | DEBUG    | Fin de operación: registrar_cliente
+2026-11-21 17:50:53,459 | ERROR    | Registro de cliente fallido: No se pudo crear el cliente: Correo inválido: 'pedro-sin-arroba' | causa: Correo inválido: 'pedro-sin-arroba'
+2026-11-21 17:50:53,459 | DEBUG    | Fin de operación: registrar_cliente
+2026-11-21 17:50:53,459 | INFO     | Cliente registrado: Cliente #2: Carlos Pérez | Doc: *******789 | carlos@correo.com | Tel: 3205551234
+2026-11-21 17:50:53,459 | DEBUG    | Fin de operación: registrar_cliente
+2026-11-21 17:50:53,459 | ERROR    | Registro de cliente fallido: Falta el parámetro obligatorio: nombre
+2026-11-21 17:50:53,459 | DEBUG    | Fin de operación: registrar_cliente
+2026-11-21 17:50:53,459 | ERROR    | Registro de cliente fallido: Ya existe un cliente con documento 1117500123
+2026-11-21 17:50:53,459 | DEBUG    | Fin de operación: registrar_cliente
+2026-11-21 17:50:53,460 | INFO     | Servicio creado: Sala 'Sala Amazonas' | capacidad 10 | $50,000/hora
+2026-11-21 17:50:53,460 | DEBUG    | Fin de operación: crear_servicio
+2026-11-21 17:50:53,460 | INFO     | Servicio creado: Equipo 'Video Beam' | $20,000/hora + seguro $15,000
+2026-11-21 17:50:53,460 | DEBUG    | Fin de operación: crear_servicio
+2026-11-21 17:50:53,460 | INFO     | Servicio creado: Asesoría 'Asesoría en Python' | nivel senior | $80,000/hora base
+2026-11-21 17:50:53,460 | DEBUG    | Fin de operación: crear_servicio
+2026-11-21 17:50:53,460 | ERROR    | Creación de servicio fallida: Tarifa por hora inválida: -100
+2026-11-21 17:50:53,460 | DEBUG    | Fin de operación: crear_servicio
+2026-11-21 17:50:53,460 | ERROR    | Creación de servicio fallida: Tipo de servicio desconocido: 'helicoptero'
+2026-11-21 17:50:53,460 | DEBUG    | Fin de operación: crear_servicio
+2026-11-21 17:50:53,461 | INFO     | Reserva creada: Reserva #1 | Ana María Gómez -> Sala Amazonas | 3h | PENDIENTE | sin calcular
+2026-11-21 17:50:53,461 | DEBUG    | Fin de operación: crear_reserva
+2026-11-21 17:50:53,461 | INFO     | Reserva #1 CONFIRMADA
+2026-11-21 17:50:53,461 | DEBUG    | Fin de operación: confirmar
+2026-11-21 17:50:53,461 | INFO     | Reserva #1 PROCESADA. Total: $160,650.00
+2026-11-21 17:50:53,461 | DEBUG    | Fin del procesamiento de la reserva #1 (estado: PROCESADA)
+2026-11-21 17:50:53,461 | DEBUG    | Fin de operación: procesar
+2026-11-21 17:50:53,462 | ERROR    | Reserva fallida: Intento de reserva incorrecto | causa: Horas de sala inválidas (1-8): 12
+2026-11-21 17:50:53,462 | DEBUG    | Fin de operación: crear_reserva
+2026-11-21 17:50:53,462 | ERROR    | Reserva fallida: Cliente con id 999 no existe
+2026-11-21 17:50:53,462 | DEBUG    | Fin de operación: crear_reserva
+2026-11-21 17:50:53,462 | ERROR    | Reserva fallida: El servicio 'Video Beam' no está disponible
+2026-11-21 17:50:53,462 | DEBUG    | Fin de operación: crear_reserva
+2026-11-21 17:50:53,462 | INFO     | Reserva creada: Reserva #2 | Carlos Pérez -> Asesoría en Python | 2h | PENDIENTE | sin calcular
+2026-11-21 17:50:53,462 | DEBUG    | Fin de operación: crear_reserva
+2026-11-21 17:50:53,462 | INFO     | Reserva #2 CANCELADA
+2026-11-21 17:50:53,462 | DEBUG    | Fin de operación: cancelar
+2026-11-21 17:50:53,463 | DEBUG    | Fin del procesamiento de la reserva #2 (estado: CANCELADA)
+2026-11-21 17:50:53,463 | ERROR    | Acción 'procesar' fallida en reserva 2: Solo se procesan reservas CONFIRMADAS (actual: CANCELADA)
+2026-11-21 17:50:53,463 | DEBUG    | Fin de operación: procesar
+2026-11-21 17:50:53,463 | INFO     | Reserva creada: Reserva #3 | Carlos Pérez -> Video Beam | 24h | PENDIENTE | sin calcular
+2026-11-21 17:50:53,463 | DEBUG    | Fin de operación: crear_reserva
+2026-11-21 17:50:53,463 | DEBUG    | Fin del procesamiento de la reserva #3 (estado: PENDIENTE)
+2026-11-21 17:50:53,463 | ERROR    | Acción 'procesar' fallida en reserva 3: Solo se procesan reservas CONFIRMADAS (actual: PENDIENTE)
+2026-11-21 17:50:53,463 | DEBUG    | Fin de operación: procesar
+2026-11-21 17:50:53,463 | INFO     | Reserva #3 CONFIRMADA
+2026-11-21 17:50:53,463 | DEBUG    | Fin de operación: confirmar
+2026-11-21 17:50:53,463 | DEBUG    | Fin del procesamiento de la reserva #3 (estado: FALLIDA)
+2026-11-21 17:50:53,463 | ERROR    | Acción 'procesar' fallida en reserva 3: Falló el procesamiento de la reserva #3 | causa: Descuento fuera de rango: 1.5
+2026-11-21 17:50:53,463 | DEBUG    | Fin de operación: procesar
+2026-11-21 17:50:53,464 | INFO     | Resumen final: 2 clientes, 3 servicios, 3 reservas
+2026-11-21 17:50:53,464 | INFO     | ===== FIN DE LA SIMULACIÓN =====

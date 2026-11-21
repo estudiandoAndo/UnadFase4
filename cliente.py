@@ -18,6 +18,12 @@ def _requerido(valor, campo):  # Función auxiliar: verifica que el dato exista
     return str(valor).strip()  # Devuelve el valor limpio (sin espacios sobrantes)
 
 
+def _ocultar_documento(documento):
+    """Oculta el documento conservando solo sus tres últimos dígitos."""
+    visibles = documento[-3:]
+    return ("*" * max(0, len(documento) - 3)) + visibles
+
+
 class Cliente(EntidadBase):  # Cliente hereda de la entidad abstracta
     """Cliente de Software FJ con datos personales privados y validados."""
 
@@ -78,6 +84,7 @@ class Cliente(EntidadBase):  # Cliente hereda de la entidad abstracta
         self.__telefono = valor  # Guarda el teléfono
 
     def describir(self):  # Implementación del método abstracto
-        doc_oculto = "*" * (len(self.documento) - 3) + self.documento[-3:]  # Oculta el documento salvo 3 dígitos
+        # Optimización por Yimer Varon: centraliza el formato privado del documento.
+        doc_oculto = _ocultar_documento(self.documento)
         return (f"Cliente #{self.id}: {self.nombre} | Doc: {doc_oculto} | "
                 f"{self.correo} | Tel: {self.telefono}")  # Texto descriptivo

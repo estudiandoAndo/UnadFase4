@@ -23,7 +23,7 @@ class Reserva(EntidadBase):  # Reserva hereda de la entidad abstracta
     PENDIENTE, CONFIRMADA, CANCELADA, PROCESADA, FALLIDA = "PENDIENTE", "CONFIRMADA", "CANCELADA", "PROCESADA", "FALLIDA"  # Estados
 
     def __init__(self, cliente, servicio, horas, **extra):  # Constructor de la reserva
-        super().__init__()  # Inicializa id y fecha
+        # Optimización por Yimer Varon: valida todas las entradas antes de completar la entidad.
         if not isinstance(cliente, Cliente):  # El cliente debe ser un Cliente real
             raise ReservaInvalidaError("La reserva requiere un cliente válido")  # Error si no lo es
         if not isinstance(servicio, Servicio):  # El servicio debe ser un Servicio real
@@ -34,6 +34,7 @@ class Reserva(EntidadBase):  # Reserva hereda de la entidad abstracta
             servicio.validar_parametros(horas, **extra)  # Método polimórfico
         except ServicioInvalidoError as error:  # Si el servicio rechaza los parámetros...
             raise ReservaInvalidaError("Intento de reserva incorrecto") from error  # ...encadena el error original
+        super().__init__()  # Inicializa id y fecha después de validar correctamente
         self._cliente = cliente  # Guarda el cliente
         self._servicio = servicio  # Guarda el servicio
         self._horas = horas  # Guarda la duración

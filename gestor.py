@@ -30,9 +30,10 @@ class GestorFJ:  # Clase que coordina todo el sistema
         print(f"   [ERROR] Error inesperado ({type(error).__name__}): {error}")  # Informa y el sistema sigue
  
     def _buscar(self, lista, identificador, nombre_tipo, error=ReservaInvalidaError):  # Búsqueda genérica por id
-        for elemento in lista: 
-            if elemento.id == identificador:  # Si coincide el id...
-                return elemento 
+        # Optimización por Yimer Varon: usa next para terminar la búsqueda al primer coincidencia.
+        elemento = next((item for item in lista if item.id == identificador), None)
+        if elemento is not None:
+            return elemento
         raise error(f"{nombre_tipo} con id {identificador} no existe")  # Si no, error propio según el tipo
  
     def registrar_cliente(self, nombre=None, documento=None, correo=None, telefono=None):  # Alta de cliente
@@ -128,8 +129,13 @@ class GestorFJ:  # Clase que coordina todo el sistema
             log.debug(f"Fin de operación: {accion}")  
  
     def resumen(self):  # Muestra los totales finales
-        procesadas = [r for r in self._reservas if r.estado == Reserva.PROCESADA]  
-        total = sum(r.costo_total for r in procesadas)  # Suma de ingresos
+        # Optimización por Yimer Varon: calcula conteo e ingresos en una sola pasada.
+        cantidad_procesadas = 0
+        total = 0
+        for reserva in self._reservas:
+            if reserva.estado == Reserva.PROCESADA:
+                cantidad_procesadas += 1
+                total += reserva.costo_total
         print(f"   Clientes: {len(self._clientes)} | Servicios: {len(self._servicios)} | "  # Totales
-              f"Reservas: {len(self._reservas)} (procesadas: {len(procesadas)}) | Ingresos: ${total:,.2f}")  # Ingresos
+              f"Reservas: {len(self._reservas)} (procesadas: {cantidad_procesadas}) | Ingresos: ${total:,.2f}")  # Ingresos
         log.info(f"Resumen final: {len(self._clientes)} clientes, {len(self._servicios)} servicios, {len(self._reservas)} reservas")

@@ -22,6 +22,14 @@ def _numero_finito(valor):
         return False
 
 
+# --- Optimización realizada por Yimer Varon: centraliza la validación de horas ---
+def _horas_validas(horas, minimo, maximo):
+    """Indica si las horas son numéricas, finitas y están dentro del rango permitido."""
+    return (_numero_finito(horas) and not isinstance(horas, bool)
+            and minimo <= horas <= maximo)
+# --- Fin de la optimización realizada por Yimer Varon ---
+
+
 class Servicio(EntidadBase, ABC):  # Clase abstracta Servicio
     """Servicio genérico de Software FJ. Las subclases definen costo, descripción y validación."""
 
@@ -97,7 +105,8 @@ class ReservaSala(Servicio):  # Servicio 1: reserva de salas
         return self._tarifa_hora * horas  # Tarifa por número de horas
 
     def validar_parametros(self, horas, **extra):  # Sobrescribe la validación
-        if isinstance(horas, bool) or not isinstance(horas, (int, float)) or not 1 <= horas <= 8:  # Entre 1 y 8 horas
+        # Optimización por Yimer Varon: usa la validación común de rango numérico.
+        if not _horas_validas(horas, 1, 8):  # Entre 1 y 8 horas
             raise ServicioInvalidoError(f"Horas de sala inválidas (1-8): {horas!r}")  # Error de horas
         asistentes = extra.get("asistentes")  # Parámetro opcional: número de asistentes
         if asistentes is not None and (not isinstance(asistentes, int) or not 1 <= asistentes <= self._capacidad):  # Debe caber
@@ -120,7 +129,7 @@ class AlquilerEquipo(Servicio):  # Servicio 2: alquiler de equipos
         return self._tarifa_hora * horas + self._seguro  # Horas por tarifa más seguro fijo
 
     def validar_parametros(self, horas, **extra):  # Sobrescribe la validación
-        if isinstance(horas, bool) or not isinstance(horas, (int, float)) or not 1 <= horas <= 72:  # Entre 1 y 72 horas
+        if not _horas_validas(horas, 1, 72):  # Entre 1 y 72 horas
             raise ServicioInvalidoError(f"Horas de alquiler inválidas (1-72): {horas!r}")  # Error de horas
 
     def describir(self):  # Sobrescribe la descripción
@@ -142,7 +151,7 @@ class AsesoriaEspecializada(Servicio):  # Servicio 3: asesorías
         return self._tarifa_hora * self.NIVELES[self._nivel] * horas  # Tarifa por nivel y horas
 
     def validar_parametros(self, horas, **extra):  # Sobrescribe la validación
-        if isinstance(horas, bool) or not isinstance(horas, (int, float)) or not 1 <= horas <= 6:  # Entre 1 y 6 horas
+        if not _horas_validas(horas, 1, 6):  # Entre 1 y 6 horas
             raise ServicioInvalidoError(f"Horas de asesoría inválidas (1-6): {horas!r}")  # Error de horas
 
     def describir(self):  # Sobrescribe la descripción
