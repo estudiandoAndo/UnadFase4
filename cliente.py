@@ -24,14 +24,14 @@ class Cliente(EntidadBase):  # Cliente hereda de la entidad abstracta
     _contador = itertools.count(1)  # Contador propio: ids 1, 2, 3... por tipo de entidad
 
     def __init__(self, nombre=None, documento=None, correo=None, telefono=None):  # Constructor
-        super().__init__()  # Inicializa id y fecha en la clase padre
-        try:  # Intenta asignar cada dato usando los setters validados
+        try:  # Primero se validan los datos usando los setters
             self.nombre = nombre  # Valida y guarda el nombre
             self.documento = documento  # Valida y guarda el documento
             self.correo = correo  # Valida y guarda el correo
             self.telefono = telefono  # Valida y guarda el teléfono
         except ClienteInvalidoError as error:  # Si algún dato es inválido...
-            raise ClienteInvalidoError("No se pudo crear el cliente") from error  # ...encadena la excepción original
+            raise ClienteInvalidoError(f"No se pudo crear el cliente: {error}") from error  # ...conserva el motivo
+        super().__init__()  # El id y la fecha se generan solo si todos los datos son válidos
 
     @property  # Getter del nombre
     def nombre(self):
@@ -39,7 +39,7 @@ class Cliente(EntidadBase):  # Cliente hereda de la entidad abstracta
 
     @nombre.setter  # Setter con validación
     def nombre(self, valor):
-        valor = _requerido(valor, "nombre")  # Debe existir
+        valor = " ".join(_requerido(valor, "nombre").split())  # Debe existir; quita espacios dobles
         if not PATRON_NOMBRE.match(valor):  # Debe cumplir el patrón
             raise ClienteInvalidoError(f"Nombre inválido: '{valor}'")  # Error si no cumple
         self.__nombre = valor.title()  # Guarda con formato Nombre Apellido
@@ -72,10 +72,12 @@ class Cliente(EntidadBase):  # Cliente hereda de la entidad abstracta
 
     @telefono.setter  # Setter con validación
     def telefono(self, valor):
-        valor = _requerido(valor, "teléfono")  # Debe existir
+        valor = _requerido(valor, "teléfono").replace(" ", "").replace("-", "")  # Acepta "310 123 4567"
         if not PATRON_TELEFONO.match(valor):  # Debe ser celular de 10 dígitos
             raise ClienteInvalidoError(f"Teléfono inválido: '{valor}'")  # Error si no cumple
         self.__telefono = valor  # Guarda el teléfono
 
     def describir(self):  # Implementación del método abstracto
-        return f"Cliente #{self.id}: {self.nombre} | Doc: {self.documento} | {self.correo}"  # Texto descriptivo
+        doc_oculto = "*" * (len(self.documento) - 3) + self.documento[-3:]  # Oculta el documento salvo 3 dígitos
+        return (f"Cliente #{self.id}: {self.nombre} | Doc: {doc_oculto} | "
+                f"{self.correo} | Tel: {self.telefono}")  # Texto descriptivo
